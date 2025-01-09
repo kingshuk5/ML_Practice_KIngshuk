@@ -33,9 +33,9 @@ def read_serial_data(port,baud_rate,num_readings,output_file):
         print(f"Unexpected Error :{e}")
 
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     #replace 'COMB  with your deviced port and set the appropriate  baud rate
-    port='COMB'# Example :dev/ttyUSB0 for linux machines
+    port='COM12'# Example :dev/ttyUSB0 for linux machines
     baud_rate=115200 #adjust as per your devices configuration
     num_readings=10 
     output_file='Serial_data.csv'   
