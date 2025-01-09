@@ -43,7 +43,7 @@ plt.imshow(segmented_image)
 plt.title('Segmented Image')
 plt.axis('off')
 
-plt.tight_layout()
+plt.tight_layout() 
 plt.show()
 
 cv2.imwrite('Segmented_image.jpg',cv2.cvtColor(segmented_image,cv2.COLOR_RGB2BGR))
