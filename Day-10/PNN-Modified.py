@@ -1,3 +1,4 @@
+
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -74,35 +75,59 @@ class ProbabilisticNeuralNetwork:
             predictions.append(np.argmax(probabilities) + 1)
         return np.array(predictions)
 
-# Create and train the model
-pnn = ProbabilisticNeuralNetwork(sigma=0.5)
-pnn.fit(X_train, y_train)
+# Create and train the model with different sigma values
+sigma_values = np.linspace(0.1, 3.0, 30)  # Range of sigma values from 0.1 to 3.0
+errors = []
 
-# Predict on test set
-y_pred = pnn.predict(X_test)
+# Evaluate the error for different sigma values
+for sigma in sigma_values:
+    pnn = ProbabilisticNeuralNetwork(sigma=sigma)
+    pnn.fit(X_train, y_train)
+    
+    # Test accuracy
+    test_pred = pnn.predict(X_test)
+    accuracy = accuracy_score(y_test, test_pred)
+    error = 1 - accuracy
+    errors.append(error)
 
-# Calculate accuracy
-accuracy = accuracy_score(y_test, y_pred)
+print(error)
+# Find the best sigma
+best_sigma = sigma_values[np.argmin(errors)]
+print(f"The best sigma value is {best_sigma:.2f} with the minimum error.")
 
-# Print results
-print([y_test,y_pred])
-print("Test Accuracy:", accuracy)
+# Example: Test on new data
+t_data='''8.85   -1.13   4.70   0.11   -0.18   -0.05   37.85   4.13
+8.60   -1.03   5.06   0.14   0.23   -0.06   37.83   4.13
+8.92   -0.96   4.91   0.06   0.03   -0.08   37.79   4.15
+8.44   -0.24   5.12   -0.01   -0.20   -0.09   37.19   4.15
+8.61   -0.33   5.18   0.05   -0.07   -0.01   37.25   4.16
+8.80   -0.44   5.24   0.04   -0.06   -0.05   37.13   4.14
+8.64   -0.14   5.06   -0.01   -0.10   -0.08   37.21   4.15
+'''
 
-# Plotting training data and decision boundaries
-def plot_data():
-    colors = ['r', 'g', 'b']  # Colors for each class
+# Parse the new test data into a numpy array
+new_data = np.array([list(map(float, line.split())) for line in t_data.strip().split('\n')])
 
-    plt.figure(figsize=(8, 6))
-    for i, cls in enumerate(np.unique(y_train)):
-        cls_data = X_train[y_train == cls]
-        plt.scatter(cls_data[:, 0], cls_data[:, 1], color=colors[i], label=f"Class {int(cls)}")
+X_new = new_data[:, :-1]
 
-    plt.title("Training Data Distribution")
-    plt.xlabel("Feature 1")
-    plt.ylabel("Feature 2")
-    plt.title(f'Learning Curve (sigma )')
-    plt.legend()
-    plt.grid()
-    plt.show()
+# Create the PNN model using the best sigma found
+pnn_best = ProbabilisticNeuralNetwork(sigma=best_sigma)
+pnn_best.fit(X_train, y_train) 
 
-plot_data()
+predictions = pnn_best.predict(X_new)
+
+# Print the predictions
+print("Predictions for the new data:")
+print(predictions)
+
+
+
+# Plotting error for different sigma values
+plt.figure(figsize=(10, 6))
+plt.plot(sigma_values, errors, label='Test Error', color='blue')
+plt.title('Error vs. Sigma for PNN')
+plt.xlabel('Sigma')
+plt.ylabel('Error (1 - Accuracy)')
+plt.grid(True)
+plt.legend()
+plt.show()
